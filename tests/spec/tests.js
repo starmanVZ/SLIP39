@@ -70,6 +70,7 @@ else if (browser == "chrome") {
         return new webdriver.Builder()
           .forBrowser("chrome")
           .setChromeOptions(new chrome.Options().addArguments("headless"))
+          .setChromeOptions(new chrome.Options().addArguments("no-sandbox"))
           .build();
     }
 }
@@ -342,8 +343,8 @@ it("Allows the user to choose the degree of security when generating master secr
         });
 });
 
-// User can enter mnemonics for reconstruction
-it("Allows the user to reconstruct a master secret from mnemonics", function(done) {
+// User can enter mnemonics for reconstruction with extendable backup flag cleared
+it("Allows the user to reconstruct a master secret from mnemonics with extendable backup flag cleared", function(done) {
     let shares = [
         "work taught acrobat leader activity tactics column similar herald much justice coal silver wildlife military august scared thunder acquire rocky",
         "work taught beard leader crunch standard moisture river expect patent obesity theory adult usual ambition huge problem charity type chew",
@@ -354,6 +355,22 @@ it("Allows the user to reconstruct a master secret from mnemonics", function(don
         .getAttribute("value")
         .then(function(masterSecret) {
             expect(masterSecret).toBe("abcdef0123456789abcdef0123456789");
+            done();
+        });
+});
+
+// User can enter mnemonics for reconstruction with extendable backup flag set
+it("Allows the user to reconstruct a master secret from mnemonics with extendable backup flag set", function(done) {
+    let shares = [
+        "emperor golden academic acid custody cowboy category stilt gravity flip predator guard exhaust tricycle humidity browser withdraw express that width",
+        "emperor golden academic agency daughter owner endorse salt main plot helpful chubby staff soldier judicial jacket clinic staff geology victim",
+    ].join("\n");
+    driver.findElement(By.css("#existing-shares"))
+        .sendKeys(shares);
+    driver.findElement(By.css("#reconstructed-hex"))
+        .getAttribute("value")
+        .then(function(masterSecret) {
+            expect(masterSecret).toBe("7323dc94f81451c319d54583a7b97229");
             done();
         });
 });
